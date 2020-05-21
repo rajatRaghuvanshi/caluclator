@@ -28,20 +28,57 @@ function App() {
   }
 
   const evaluate = () => {
+    console.log("solve start", inputValue, exp);
+
     let solve = [];
-    for(let i =0; i < exp.length; i++) {
+    let i = 0;
+    while(i < exp.length) {
+      if(exp[i] === "*" || exp[i] === "+" || exp[i] === "-" || exp[i] === "/") {
+        console.log("solvesdd=---", solve, exp[i]);
+
+        var a = solve.pop();
+        var b = exp[ i+ 1];
+        if (a == undefined ) {
+          window.alert("wrong expression");
+          changeInput("Wrong Input");
+          return;
+        }
+        let result;
+        if(exp[i] === "*") {
+          result = parseInt(a) * parseInt(b);
+        } else if (exp[i] === "+") {
+          result = parseInt(a) + parseInt(b);
+        } else if (exp[i] === "-") {
+          result = parseInt(a) - parseInt(b);
+        } else if (exp[i] === "/") {
+          result = parseInt(a) / parseInt(b);
+        }
+        solve.push(result)
+        i = i+2;
+      } else {
+        solve.push(exp[i]);
+        i++
+      }
     }
-    console.log("newExp", exp);
+    changeInput(solve[0]);
+    changeExp([solve[0]])
+    console.log("solve end", solve);
+
   }
 
   const handleClick = (e, value) => {
-    console.log("e", e.target.valu, value);
     updateExpressin(value);
-    let newValue;
     if (value == "=") {
       evaluate()
-    } else newValue = inputValue + "" + value;
-    changeInput(newValue);
+    } else {
+      let newValue = inputValue + "" + value;;
+      changeInput(newValue)
+    } 
+  }
+
+  const handleRemove = () => {
+    changeInput("");
+    changeExp([])
   }
  
   return (
@@ -57,24 +94,25 @@ function App() {
          <Block number={7} handleClick={handleClick}/>
          <Block number={8} handleClick={handleClick}/>
          <Block number={9} handleClick={handleClick}/>
-         <Block number={"*"} handleClick={handleClick}/>
+         <Block number={"*"} ops="operator" handleClick={handleClick}/>
        </div>
        <div className="row">
          <Block number={4} handleClick={handleClick}/>
          <Block number={5} handleClick={handleClick}/>
          <Block number={6} handleClick={handleClick}/>
-         <Block number={"-"} handleClick={handleClick}/>
+         <Block number={"-"} ops="operator" handleClick={handleClick}/>
        </div>
        <div className="row">
          <Block number={1} handleClick={handleClick}/>
          <Block number={2} handleClick={handleClick}/>
          <Block number={3} handleClick={handleClick}/>
-         <Block number={"+"} handleClick={handleClick}/>
+         <Block number={"+"} ops="operator" handleClick={handleClick}/>
        </div>
        <div className="row">
          <Block number={0} handleClick={handleClick}/>
-         <Block number={"."} handleClick={handleClick}/>
-         <Block number={"="} handleClick={handleClick}/>
+         <Block number={"C"} ops="operator" handleClick={handleRemove}/>
+         <Block number={"/"} ops="operator" handleClick={handleClick}/>
+         <Block number={"="} ops="operator" handleClick={handleClick}/>
        </div>
      </div>
     </div>
@@ -83,7 +121,7 @@ function App() {
 
 function Block(props) {
   return (
-    <div className="cell" onClick={(e) => props.handleClick(e, props.number)}>
+    <div className={`cell ${props.ops ? props.ops : ""}`} onClick={(e) => props.handleClick(e, props.number)}>
       {props.number}
     </div>
   )
